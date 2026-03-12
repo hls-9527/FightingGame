@@ -72,7 +72,7 @@ public class Fighting
                 for (int i = 0; i < enemyList.size(); i++)
                 {
                     Enemy e = enemyList.get(i);
-                    e.setMaxHp(e.getMaxHp() + 50);  // 增加最大生命值
+                    e.setMaxHp(e.getMaxHp() + 100);  // 增加最大生命值
                     e.setHp(e.getMaxHp());          // 恢复满血
                     e.setAtk(e.getAtk() + 10);      // 增加攻击力
                     e.setDef(e.getDef() + 5);       // 增加防御力

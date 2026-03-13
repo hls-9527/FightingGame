@@ -5,7 +5,7 @@ import com.huanlingsheng.ui.Login;
  * 文字格斗游戏主程序类
  * 功能：程序入口，启动游戏登录界面
  * 作者：南瓜
- * 版本：1.0
+ * 版本：3.1
  */
 public class APP
 {

@@ -11,7 +11,7 @@ import java.util.Scanner;
  * 战斗系统类
  * 功能：处理游戏的核心战斗逻辑，包括角色创建、战斗回合、技能系统等
  * 作者：南瓜
- * 版本：1.0
+ * 版本：3.1
  */
 public class Fighting
 {

@@ -313,8 +313,10 @@ public class Fighting
             case "防御姿态":
                 System.out.println("坦克采取了防御姿态！");
                 enemy.setDefending(true);
+                int damage5 = (int) (attack(enemy.getAtk(), player.getDef()) * 0.5);
                 enemy.setDefendingcount(2);  // 防御状态持续2回合
-                System.out.println("🛡️ " + enemy.getName() + " 摆出了防御姿态！");
+                System.out.println("🛡️ " + enemy.getName() + " 摆出了防御姿态，同时造成" + damage5 + "点伤害！");
+                player.takeDamage(damage5);
                 break;
 
             case "斗转星移":
@@ -331,8 +333,14 @@ public class Fighting
 
             case "蓄势待发":
                 System.out.println("射手采取了蓄势待发！");
-                enemy.setAttacking(true);  // 激活蓄势待发状态
                 int damage4 = (int) (attack(enemy.getAtk(), player.getDef()) * 0.9);
+                // 蓄势待发状态：伤害翻倍
+                if (enemy.isAttacking())
+                {
+                    damage4 *= 2;
+                    enemy.setAttacking(false);
+                }
+                enemy.setAttacking(true);  // 激活蓄势待发状态
                 System.out.println("🏹 " + enemy.getName() + " 对你使用了蓄势待发，造成 " + damage4 + " 点伤害！");
                 player.takeDamage(damage4);
                 break;
@@ -420,7 +428,7 @@ public class Fighting
                     System.out.println("1. 桃子 " + player.getPackageList().get(0).getNum() + " 个 恢复100点生命值");
                     System.out.println("2. 煎蛋 " + player.getPackageList().get(1).getNum() + " 个 最大生命值+20%");
                     System.out.println("3. 花酿鸡 " + player.getPackageList().get(2).getNum() + " 个 当前回合受到的伤害减半");
-                    System.out.println("4. 黄酒 " + player.getPackageList().get(3).getNum() + " 个 下回合造成的伤害翻倍");
+                    System.out.println("4. 黄酒 " + player.getPackageList().get(3).getNum() + " 个 当前回合造成的伤害翻倍");
                     System.out.println("5. 黑背鲈鱼 " + player.getPackageList().get(4).getNum() + " 个 恢复100点魔力值");
                     System.out.println("6. 白玉汤 " + player.getPackageList().get(5).getNum() + " 个 最大魔力值+20%");
                     System.out.println("0. 返回上级选项");
@@ -626,14 +634,15 @@ public class Fighting
         int filledLength = (int) Math.ceil((mp * 1.0 / Maxmp) * barLength);
         StringBuilder sb = new StringBuilder();
 
-        // 添加空格对齐（根据角色名称长度）
-        for (int i = 0; i < nameLength + 2; i++)
+        // 添加空格对齐（根据角色名称长度 + ": [" 的长度）
+        // nameLength是名字长度，需要加上": [ "这些字符的长度
+        for (int i = 0; i < nameLength + 3; i++)  // 改为+3，对应": ["
         {
             sb.append(" ");
         }
-        sb.append("MP: [");
 
-        // 构建进度条
+        // 构建进度条（去掉"MP: "前缀）
+        sb.append("[");
         for (int i = 0; i < barLength; i++)
         {
             if (i < filledLength)
@@ -644,7 +653,7 @@ public class Fighting
                 sb.append("░");  // 未填充部分
             }
         }
-        sb.append("] ").append(mp).append("/").append(Maxmp);
+        sb.append("] ").append(mp).append("/").append(Maxmp).append(" MP");
         return sb.toString();
     }
 
@@ -702,7 +711,7 @@ public class Fighting
         // 分配属性
         int points = 100;  // 总属性点
         System.out.println("您总共有" + points + "个属性点");
-        System.out.println("可分配的属性有：1.生命值（每点+10HP） 2.魔力值（每点+5MP） 3.攻击力（每点+3ATK） 4.防御力（每点+1DEF）");
+        System.out.println("可分配的属性有：1.生命值（每点+10HP） 2.魔力值（每点+5MP） 3.攻击力（每点+2ATK） 4.防御力（每点+1DEF）");
         System.out.println("建议平均分配哦~");
         System.out.println();
 
@@ -731,7 +740,7 @@ public class Fighting
         Hero player = new Hero(username,
                 50 + (hpPoints * 10),   // 生命值 = 基础50 + 分配点数×10
                 30 + (mpPoints * 5),    // 魔力值 = 基础30 + 分配点数×5
-                10 + (atkPoints * 3),   // 攻击力 = 基础10 + 分配点数×3
+                10 + (atkPoints * 2),   // 攻击力 = 基础10 + 分配点数×2
                 defPoints);              // 防御力 = 基础0 + 分配点数×1
 
         // 添加初始化技能
@@ -757,8 +766,19 @@ public class Fighting
     {
         System.out.println("请输入您要分配给" + specialPointName + "的属性点（当前剩余属性点：" + points + "）：");
 
-        // 读取用户输入并转换为整数
-        int assignPoints = Integer.parseInt(sc.nextLine());
+        int assignPoints = 0;
+        try {
+            String input = sc.nextLine();
+            // 处理空输入
+            if (input.trim().isEmpty()) {
+                System.out.println("输入不能为空！默认分配0点！");
+                return 0;
+            }
+            assignPoints = Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            System.out.println("请输入有效的数字！默认分配0点！");
+            return 0;
+        }
 
         // 检查输入是否有效（不能为负数）
         if (assignPoints < 0)

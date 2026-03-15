@@ -187,6 +187,15 @@ public class Fighting
                     player.setDef(player.getDef() + 10);      // 增加防御力
                     System.out.println("你获得了属性提升！\n当前属性为：" + player.show());
                     System.out.println();
+
+                    int probability = r.nextInt(10);
+                    if (probability >= 1)
+                    {
+                        int randomindex = r.nextInt(player.getPackageList().size());
+                        System.out.println("恭喜你获得额外祝福！你获得了道具：" + player.getPackageList().get(randomindex).getName());
+                        player.getConsumable(player.getPackageList().get(randomindex).getName());
+                        System.out.println();
+                    }
                 }
 
                 // 恢复已损生命值的50%-80%
@@ -469,7 +478,7 @@ public class Fighting
                             if (checkConsumable(player, "黄酒"))
                             {
                                 player.useConsumable("黄酒");
-                                System.out.println("使用成功！下回合造成的伤害翻倍！");
+                                System.out.println("使用成功！当前回合造成的伤害翻倍！");
                                 player.setAttacking(true);
                                 sign++;
                             }
